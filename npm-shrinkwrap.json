@@ -1,0 +1,11 @@
+{
+  "name": "couchdb-change-events",
+  "version": "1.0.1",
+  "dependencies": {
+    "lodash": {
+      "version": "4.17.4",
+      "from": "lodash@>=4.17.4 <5.0.0",
+      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.4.tgz"
+    }
+  }
+}

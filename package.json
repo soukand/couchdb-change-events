@@ -13,7 +13,9 @@
   "author": "",
   "license": "ISC",
   "homepage": "https://bitbucket.org/party-games/couchdb-change-events#readme",
-  "dependencies": {},
+  "dependencies": {
+    "lodash": "^4.17.4"
+  },
   "devDependencies": {
     "eslint": "^3.16.1",
     "eslint-config-pipedrive": "^1.0.7"
