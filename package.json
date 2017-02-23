@@ -1,7 +1,7 @@
 {
   "name": "couchdb-change-events",
   "version": "1.0.2",
-  "description": "",
+  "description": "This library will emit changes done in couchdb.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

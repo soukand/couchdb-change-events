@@ -5,7 +5,7 @@ const http = require('http'),
 	_ = require('lodash'),
 	EventEmitter = require('events');
 
-class CouchdbChangeStream extends EventEmitter {
+class CouchdbChangeEvents extends EventEmitter {
 	constructor({
 		host = 'localhost',
 		port = 5984,
@@ -138,4 +138,4 @@ class CouchdbChangeStream extends EventEmitter {
 	}
 }
 
-module.exports = CouchdbChangeStream;
+module.exports = CouchdbChangeEvents;
