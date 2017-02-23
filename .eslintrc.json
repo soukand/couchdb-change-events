@@ -1,0 +1,3 @@
+{
+	"extends": ["pipedrive","pipedrive/es6"]
+}
