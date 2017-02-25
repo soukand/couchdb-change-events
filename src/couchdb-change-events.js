@@ -18,7 +18,7 @@ class CouchdbChangeEvents extends EventEmitter {
 		this.COUCHDB_STATUS_DISCONNECTED = 'disconnected';
 
 		if (!db) {
-			let noDbError = new Error('db parameter should be defined');
+			let noDbError = new Error('db parameter missing from config');
 
 			noDbError.error_type = 'EMPTY_DB_PARAMETER';
 
@@ -35,13 +35,13 @@ class CouchdbChangeEvents extends EventEmitter {
 
 		this.heartbeat = parseInt(heartbeat, 10) || 2000;
 
-		this.connect();
-
 		this.lastHeartBeat = new Date().getTime();
 
 		this.setCouchdbStatus(this.COUCHDB_STATUS_DISCONNECTED);
 
-		setInterval(this.checkHeartbeat.bind(this), 1000);
+		this.checkHeartbeat();
+
+		this.connect();
 	}
 
 	checkHeartbeat() {
@@ -52,6 +52,8 @@ class CouchdbChangeEvents extends EventEmitter {
 				this.couchDbConnection.destroy();
 			}
 		}
+
+		global.setTimeout(this.checkHeartbeat.bind(this), 1000);
 	}
 
 	connect() {
