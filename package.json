@@ -4,7 +4,7 @@
   "description": "This library will emit changes done in couchdb.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/mocha/bin/mocha test"
   },
   "repository": {
     "type": "git",
@@ -13,11 +13,13 @@
   "author": "",
   "license": "ISC",
   "homepage": "https://bitbucket.org/party-games/couchdb-change-events#readme",
-  "dependencies": {
-    "lodash": "^4.17.4"
-  },
+  "dependencies": {},
   "devDependencies": {
     "eslint": "^3.16.1",
-    "eslint-config-pipedrive": "^1.0.7"
+    "eslint-config-pipedrive": "^1.0.7",
+    "mocha": "^3.2.0",
+    "proxyquire": "^1.7.11",
+    "should": "^11.2.0",
+    "sinon": "^1.17.7"
   }
 }

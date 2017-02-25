@@ -1,8 +1,5 @@
-/* eslint-disable no-console */
-
 const http = require('http'),
 	https = require('https'),
-	_ = require('lodash'),
 	EventEmitter = require('events');
 
 class CouchdbChangeEvents extends EventEmitter {
@@ -20,7 +17,7 @@ class CouchdbChangeEvents extends EventEmitter {
 		this.COUCHDB_STATUS_CONNECTED = 'connected';
 		this.COUCHDB_STATUS_DISCONNECTED = 'disconnected';
 
-		if (_.isEmpty(db)) {
+		if (!db) {
 			let noDbError = new Error('db parameter should be defined');
 
 			noDbError.error_type = 'EMPTY_DB_PARAMETER';
@@ -74,7 +71,9 @@ class CouchdbChangeEvents extends EventEmitter {
 			this.couchDbConnection.on('data', (data) => {
 				this.setCouchdbStatus(this.COUCHDB_STATUS_CONNECTED);
 
-				const messages = _.pull(data.toString().split('\n'), '');
+				const messages = data.toString().split('\n').filter((value) => {
+					return value !== '';
+				});
 
 				if (messages.length > 0) {
 					for (let change of messages) {
