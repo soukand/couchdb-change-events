@@ -4,7 +4,8 @@
   "description": "This library will emit changes done in couchdb.",
   "main": "index.js",
   "scripts": {
-    "test": "node_modules/mocha/bin/mocha test"
+    "test": "node_modules/mocha/bin/mocha test",
+    "coverage": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec ./test/*"
   },
   "repository": {
     "type": "git",
@@ -13,7 +14,9 @@
   "author": "Toomas Sõukand",
   "license": "ISC",
   "homepage": "https://git@github.com/soukand/couchdb-change-events#readme",
-  "dependencies": {},
+  "dependencies": {
+    "istanbul": "^0.4.5"
+  },
   "devDependencies": {
     "eslint": "^3.16.1",
     "eslint-config-pipedrive": "^1.0.7",
