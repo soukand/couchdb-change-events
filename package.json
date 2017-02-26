@@ -6,7 +6,7 @@
   "scripts": {
     "test": "node_modules/mocha/bin/mocha test",
     "coverage": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec ./test/*",
-    "report-coverage-to-code-climate": "./node_modules/codeclimate-test-reporter/bin < ./coverage/lcov.info",
+    "report-coverage-to-code-climate": "./node_modules/codeclimate-test-reporter/bin/codeclimate.js < ./coverage/lcov.info",
     "test-travis": "npm run coverage; npm run report-coverage-to-code-climate"
   },
   "repository": {
