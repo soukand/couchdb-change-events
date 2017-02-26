@@ -145,7 +145,7 @@ describe('CouchdbChangeEvents', () => {
 		it('sets last heartbeats time to current time', () => {
 			const timeDelta = new Date().getTime() - changeEvents.lastHeartBeat;
 
-			should.equal(timeDelta < 5, true);
+			should.equal(timeDelta < 15, true);
 			should.equal(timeDelta >= 0, true);
 		});
 
@@ -264,7 +264,7 @@ describe('CouchdbChangeEvents', () => {
 
 			const timeDelta = new Date().getTime() - changeEvents.lastHeartBeat;
 
-			should.equal(timeDelta < 5, true);
+			should.equal(timeDelta < 15, true);
 			should.equal(timeDelta >= 0, true);
 		});
 
