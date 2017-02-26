@@ -8,11 +8,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org/party-games/couchdb-change-events.git"
+    "url": "git+ssh://git@github.com/soukand/couchdb-change-events.git"
   },
-  "author": "",
+  "author": "Toomas Sõukand",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/party-games/couchdb-change-events#readme",
+  "homepage": "https://git@github.com/soukand/couchdb-change-events#readme",
   "dependencies": {},
   "devDependencies": {
     "eslint": "^3.16.1",

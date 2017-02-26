@@ -9,6 +9,8 @@ describe('CouchdbChangeEvents', () => {
 	beforeEach(() => {
 		proxy = {};
 
+		global.setTimeout = sinon.spy();
+
 		CouchdbChangeEvents = proxyquire('../src/couchdb-change-events', proxy);
 	});
 
@@ -140,7 +142,51 @@ describe('CouchdbChangeEvents', () => {
 		});
 
 		it('tries to connect to couchdb changes', () => {
-			should.equal(changeEvents.setCouchdbStatus.callCount, 1);
+			should.equal(changeEvents.connect.callCount, 1);
+		});
+	});
+
+	describe('.checkHeartbeat()', () => {
+		let changeEvents;
+
+		beforeEach(() => {
+			CouchdbChangeEvents.prototype.connect = sinon.spy();
+
+			changeEvents = new CouchdbChangeEvents({
+				db: 'my_database'
+			});
+
+			global.setTimeout.reset();
+		});
+
+		it('checks heartbeat after every second', () => {
+			changeEvents.checkHeartbeat();
+
+			should.equal(
+				global.setTimeout.firstCall.args[0].name,
+				'bound checkHeartbeat'
+			);
+
+			should.equal(global.setTimeout.firstCall.args[1], 1000);
+		});
+
+		it('kills http connection, if there has not been heartbeat for atleast 10s', () => {
+			changeEvents.lastHeartBeat = new Date().getTime() - 11000;
+
+			changeEvents.couchDbConnection = {
+				destroy: sinon.spy()
+			};
+
+			changeEvents.checkHeartbeat();
+
+			should.equal(changeEvents.couchDbConnection.destroy.callCount, 1);
+		});
+
+		it('does nothing when connection does not exist and heartbeat time is exceeded', () => {
+			changeEvents.lastHeartBeat = new Date().getTime() - 11000;
+			changeEvents.checkHeartbeat();
+
+			should.equal(changeEvents.couchDbConnection, null);
 		});
 	});
 });

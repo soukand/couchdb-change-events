@@ -47,7 +47,7 @@ class CouchdbChangeEvents extends EventEmitter {
 	checkHeartbeat() {
 		const currentTime = new Date().getTime();
 
-		if (currentTime - this.lastHeartBeat > 15000) {
+		if (currentTime - this.lastHeartBeat > 10000) {
 			if (this.couchDbConnection) {
 				this.couchDbConnection.destroy();
 			}
@@ -102,7 +102,7 @@ class CouchdbChangeEvents extends EventEmitter {
 	reconnect() {
 		this.setCouchdbStatus(this.COUCHDB_STATUS_DISCONNECTED);
 
-		setTimeout(this.connect.bind(this), 1000);
+		global.setTimeout(this.connect.bind(this), 1000);
 	}
 
 	setCouchdbStatus(status) {
