@@ -1,29 +1,30 @@
 {
-	"name": "couchdb-change-events",
-	"version": "1.0.4",
-	"description": "This library will emit changes done in couchdb.",
-	"main": "index.js",
-	"scripts": {
-		"test": "node_modules/mocha/bin/mocha test",
-		"coverage": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec ./test/*",
-		"test-travis": "npm run coverage"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+ssh://git@github.com/soukand/couchdb-change-events.git"
-	},
-	"author": "Toomas Sõukand",
-	"license": "ISC",
-	"homepage": "https://git@github.com/soukand/couchdb-change-events#readme",
-	"dependencies": {
-		"istanbul": "^0.4.5"
-	},
-	"devDependencies": {
-		"eslint": "^3.16.1",
-		"eslint-config-pipedrive": "^1.0.7",
-		"mocha": "^3.2.0",
-		"proxyquire": "^1.7.11",
-		"should": "^11.2.0",
-		"sinon": "^1.17.7"
-	}
+  "name": "couchdb-change-events",
+  "version": "1.0.4",
+  "description": "This library will emit changes done in couchdb.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node_modules/mocha/bin/mocha test",
+    "coverage": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec ./test/*",
+    "report-coverage-to-code-climate": "./node_modules/codeclimate-test-reporter/bin < ./coverage/lcov.info",
+    "test-travis": "npm run coverage; npm run report-coverage-to-code-climate"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/soukand/couchdb-change-events.git"
+  },
+  "author": "Toomas Sõukand",
+  "license": "ISC",
+  "homepage": "https://git@github.com/soukand/couchdb-change-events#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "codeclimate-test-reporter": "^0.4.1",
+    "istanbul": "^0.4.5",
+    "eslint": "^3.16.1",
+    "eslint-config-pipedrive": "^1.0.7",
+    "mocha": "^3.2.0",
+    "proxyquire": "^1.7.11",
+    "should": "^11.2.0",
+    "sinon": "^1.17.7"
+  }
 }

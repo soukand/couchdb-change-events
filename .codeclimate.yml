@@ -7,3 +7,4 @@ engines:
 ratings:
    paths:
    - "src/**.js"
+   - "index.js"
