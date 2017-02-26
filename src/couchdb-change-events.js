@@ -9,6 +9,7 @@ class CouchdbChangeEvents extends EventEmitter {
 		protocol = 'http',
 		heartbeat = 2000,
 		includeDocs = true,
+		autoConnect = true,
 		lastEventId,
 		db
 	}) {
@@ -41,7 +42,9 @@ class CouchdbChangeEvents extends EventEmitter {
 
 		this.checkHeartbeat();
 
-		this.connect();
+		if (autoConnect) {
+			this.connect();
+		}
 	}
 
 	checkHeartbeat() {
@@ -70,33 +73,36 @@ class CouchdbChangeEvents extends EventEmitter {
 		client.request(requestOptions, (response) => {
 			this.couchDbConnection = response;
 
-			this.couchDbConnection.on('data', (data) => {
-				this.setCouchdbStatus(this.COUCHDB_STATUS_CONNECTED);
-
-				const messages = data.toString().split('\n').filter((value) => {
-					return value !== '';
-				});
-
-				if (messages.length > 0) {
-					for (let change of messages) {
-						let couchdbChange = JSON.parse(change);
-
-						this.lastEventId = couchdbChange.seq;
-
-						this.emit('data', couchdbChange);
-					}
-				} else {
-					this.lastHeartBeat = new Date().getTime();
-				}
-			});
-
-			this.couchDbConnection.on('end', () => {
-				this.reconnect();
-			});
+			this.couchDbConnection.on('data', this.onCouchdbChange);
+			this.couchDbConnection.on('end', this.reconnect);
 		}).on('error', (error) => {
-			this.emit('couchdb_error', error);
-			this.reconnect('end');
+			this.emitError(error);
+			this.reconnect();
 		}).end();
+	}
+
+	onCouchdbChange(data) {
+		this.setCouchdbStatus(this.COUCHDB_STATUS_CONNECTED);
+
+		this.lastHeartBeat = new Date().getTime();
+
+		const messages = data.toString().split('\n').filter((value) => {
+			return value !== '';
+		});
+
+		if (messages.length > 0) {
+			for (let change of messages) {
+				let couchdbChange = JSON.parse(change);
+
+				this.lastEventId = couchdbChange.seq;
+
+				this.emit('data', couchdbChange);
+			}
+		}
+	}
+
+	emitError(error) {
+		this.emit('couchdb_error', error);
 	}
 
 	reconnect() {

@@ -4,10 +4,29 @@ const proxyquire = require('proxyquire').noCallThru(),
 
 describe('CouchdbChangeEvents', () => {
 	let CouchdbChangeEvents,
+		httpResponse,
+		http,
 		proxy;
 
 	beforeEach(() => {
 		proxy = {};
+
+		httpResponse = {
+			on: sinon.stub().callsArg(1)
+		};
+
+		http = {
+			on: sinon.stub().returns(http).callsArgWith(1, 'error'),
+			end: sinon.spy()
+		};
+
+		proxy.http = {
+			request: sinon.stub().returns(http).callsArgWith(1, httpResponse)
+		};
+
+		proxy.https = {
+			request: sinon.stub().returns(http).callsArgWith(1, httpResponse)
+		};
 
 		global.setTimeout = sinon.spy();
 
@@ -144,6 +163,17 @@ describe('CouchdbChangeEvents', () => {
 		it('tries to connect to couchdb changes', () => {
 			should.equal(changeEvents.connect.callCount, 1);
 		});
+
+		it('does not connect, if autoConnect is false', () => {
+			changeEvents.connect.reset();
+
+			changeEvents = new CouchdbChangeEvents({
+				db: 'my_database',
+				autoConnect: false
+			});
+
+			should.equal(changeEvents.connect.callCount, 0);
+		});
 	});
 
 	describe('.checkHeartbeat()', () => {
@@ -187,6 +217,91 @@ describe('CouchdbChangeEvents', () => {
 			changeEvents.checkHeartbeat();
 
 			should.equal(changeEvents.couchDbConnection, null);
+		});
+	});
+
+
+	describe('.connect()', () => {
+		let changeEvents;
+
+		beforeEach(() => {
+			changeEvents = new CouchdbChangeEvents({
+				db: 'my_database',
+				autoConnect: false
+			});
+
+			changeEvents.getRequestOptions = sinon.stub().returns({
+				request: 'options'
+			});
+
+			changeEvents.emitError = sinon.spy();
+			changeEvents.onCouchdbChange = sinon.spy();
+			changeEvents.reconnect = sinon.spy();
+		});
+
+		it('uses http protocol, if protocol is not https', () => {
+			changeEvents.connect();
+
+			should.equal(proxy.http.request.callCount, 1);
+		});
+
+		it('uses https protocol, if protocol is https', () => {
+			changeEvents.protocol = 'https';
+			changeEvents.connect();
+
+			should.equal(proxy.https.request.callCount, 1);
+		});
+
+		it('gets request options for http request', () => {
+			changeEvents.connect();
+
+			should.equal(changeEvents.getRequestOptions.callCount, 1);
+		});
+
+		it('updates lastHeartBeat to current time', () => {
+			changeEvents.lastHeartBeat = null;
+			changeEvents.connect();
+
+			const timeDelta = new Date().getTime() - changeEvents.lastHeartBeat;
+
+			should.equal(timeDelta < 5, true);
+			should.equal(timeDelta >= 0, true);
+		});
+
+		it('sets http response to couchDbConnection', () => {
+			changeEvents.connect();
+
+			should.deepEqual(changeEvents.couchDbConnection, httpResponse);
+		});
+
+		it('emits error, if request fails', () => {
+			proxy.http.request = sinon.stub().returns(http);
+
+			changeEvents.connect();
+
+			should.equal(changeEvents.emitError.firstCall.args[0], 'error');
+		});
+
+		it('reconnects, if request fails', () => {
+			proxy.http.request = sinon.stub().returns(http);
+
+			changeEvents.connect();
+
+			should.equal(changeEvents.reconnect.callCount, 1);
+		});
+
+		it('calls onCouchdbChange when data is received from couchdb', () => {
+			changeEvents.connect();
+
+			should.equal(httpResponse.on.firstCall.args[0], 'data');
+			should.equal(changeEvents.onCouchdbChange.callCount, 1);
+		});
+
+		it('reconnects on couchdb connection end', () => {
+			changeEvents.connect();
+
+			should.equal(httpResponse.on.secondCall.args[0], 'end');
+			should.equal(changeEvents.reconnect.callCount, 2);
 		});
 	});
 });
