@@ -1,3 +1,9 @@
 {
-	"extends": ["pipedrive","pipedrive/es6"]
+	"extends": ["pipedrive","pipedrive/es6"],
+	"env": {
+		"es6": true
+	},
+	"parserOptions": {
+		"ecmaVersion": 6
+	}
 }
