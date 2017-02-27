@@ -79,7 +79,8 @@ describe('CouchdbChangeEvents', () => {
 		it('uses parameter "lastEventId" from provided config', () => {
 			changeEvents = new CouchdbChangeEvents({
 				db: 'my_database',
-				lastEventId: '127-eb534549c61b48f28c753ea95c64f02b'
+				lastEventId: '127-eb534549c61b48f28c753ea95c64f02b',
+				autoConnect: false
 			});
 
 			should.equal(
@@ -183,7 +184,8 @@ describe('CouchdbChangeEvents', () => {
 			CouchdbChangeEvents.prototype.connect = sinon.spy();
 
 			changeEvents = new CouchdbChangeEvents({
-				db: 'my_database'
+				db: 'my_database',
+				autoConnect: false
 			});
 
 			global.setTimeout.reset();
@@ -302,6 +304,108 @@ describe('CouchdbChangeEvents', () => {
 
 			should.equal(httpResponse.on.secondCall.args[0], 'end');
 			should.equal(changeEvents.reconnect.callCount, 2);
+		});
+	});
+
+	describe('.onCouchdbChange()', () => {
+		let changeEvents;
+
+		beforeEach(() => {
+			changeEvents = new CouchdbChangeEvents({
+				db: 'my_database',
+				autoConnect: false
+			});
+
+			changeEvents.lastHeartBeat = null;
+
+			changeEvents.setCouchdbStatus = sinon.spy();
+			changeEvents.emit = sinon.spy();
+		});
+
+		it('sets couchdb status to connected, if its not already', () => {
+			changeEvents.onCouchdbChange('');
+
+			should.equal(
+				changeEvents.setCouchdbStatus.firstCall.args[0],
+				'connected'
+			);
+		});
+
+		it('updates last heartbeat time', () => {
+			changeEvents.onCouchdbChange('');
+
+			const timeDelta = new Date().getTime() - changeEvents.lastHeartBeat;
+
+			should.equal(timeDelta < 15, true);
+			should.equal(timeDelta >= 0, true);
+		});
+
+		it('updates lastEventId, if real change is received', () => {
+			changeEvents.onCouchdbChange('{"seq": 32}');
+
+			should.equal(changeEvents.lastEventId, 32);
+		});
+
+		it('emits received event', () => {
+			changeEvents.onCouchdbChange('{"seq": 32}');
+
+			should.deepEqual(changeEvents.emit.firstCall.args, [
+				'data', { seq: 32 }
+			]);
+		});
+	});
+
+	describe('.emitError()', () => {
+		let changeEvents;
+
+		beforeEach(() => {
+			changeEvents = new CouchdbChangeEvents({
+				db: 'my_database',
+				autoConnect: false
+			});
+
+			changeEvents.emit = sinon.spy();
+		});
+
+		it('emits error', () => {
+			changeEvents.emitError('couch-error');
+
+			should.deepEqual(changeEvents.emit.firstCall.args, [
+				'couchdb_error', 'couch-error'
+			]);
+		});
+	});
+
+	describe('.reconnect()', () => {
+		let changeEvents;
+
+		beforeEach(() => {
+			changeEvents = new CouchdbChangeEvents({
+				db: 'my_database',
+				autoConnect: false
+			});
+
+			global.setTimeout.reset();
+			changeEvents.setCouchdbStatus = sinon.spy();
+		});
+
+		it('sets couchdb status to disconnected, if its not already', () => {
+			changeEvents.reconnect('');
+
+			should.equal(
+				changeEvents.setCouchdbStatus.firstCall.args[0],
+				'disconnected'
+			);
+		});
+
+		it('tries to reconnect in 1 second', () => {
+			changeEvents.reconnect('');
+
+			should.equal(
+				global.setTimeout.firstCall.args[0].name, 'bound connect'
+			);
+
+			should.equal(global.setTimeout.firstCall.args[1], 1000);
 		});
 	});
 });
