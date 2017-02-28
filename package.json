@@ -1,6 +1,6 @@
 {
   "name": "couchdb-change-events",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "This library will emit changes done in couchdb.",
   "main": "index.js",
   "scripts": {
@@ -15,7 +15,17 @@
   },
   "author": "Toomas Sõukand",
   "license": "ISC",
-  "keywords": ["couchdb", "changes", "events", "stream", "change", "event", "couch", "eventemitter", "emitter"],
+  "keywords": [
+    "couchdb",
+    "changes",
+    "events",
+    "stream",
+    "change",
+    "event",
+    "couch",
+    "eventemitter",
+    "emitter"
+  ],
   "homepage": "https://git@github.com/soukand/couchdb-change-events#readme",
   "dependencies": {},
   "devDependencies": {
