@@ -76,6 +76,16 @@ describe('CouchdbChangeEvents', () => {
 			should.equal(changeEvents.db, 'my_database');
 		});
 
+		it('uses default heartbeat, if empty heartbeat is provided', () => {
+			changeEvents = new CouchdbChangeEvents({
+				db: 'my_database',
+				autoConnect: false,
+				heartbeat: null
+			});
+
+			should.equal(changeEvents.heartbeat, 2000);
+		});
+
 		it('uses parameter "lastEventId" from provided config', () => {
 			changeEvents = new CouchdbChangeEvents({
 				db: 'my_database',
@@ -347,10 +357,16 @@ describe('CouchdbChangeEvents', () => {
 		});
 
 		it('emits received event', () => {
-			changeEvents.onCouchdbChange('{"seq": 32}');
+			changeEvents.onCouchdbChange('{"seq": 32}\n{"seq": 33}\n');
+
+			should.equal(changeEvents.emit.callCount, 2);
 
 			should.deepEqual(changeEvents.emit.firstCall.args, [
 				'data', { seq: 32 }
+			]);
+
+			should.deepEqual(changeEvents.emit.secondCall.args, [
+				'data', { seq: 33 }
 			]);
 		});
 	});
@@ -390,7 +406,7 @@ describe('CouchdbChangeEvents', () => {
 		});
 
 		it('sets couchdb status to disconnected, if its not already', () => {
-			changeEvents.reconnect('');
+			changeEvents.reconnect();
 
 			should.equal(
 				changeEvents.setCouchdbStatus.firstCall.args[0],
@@ -399,13 +415,146 @@ describe('CouchdbChangeEvents', () => {
 		});
 
 		it('tries to reconnect in 1 second', () => {
-			changeEvents.reconnect('');
+			changeEvents.reconnect();
 
 			should.equal(
 				global.setTimeout.firstCall.args[0].name, 'bound connect'
 			);
 
 			should.equal(global.setTimeout.firstCall.args[1], 1000);
+		});
+	});
+
+	describe('.setCouchdbStatus()', () => {
+		let changeEvents;
+
+		beforeEach(() => {
+			changeEvents = new CouchdbChangeEvents({
+				db: 'my_database',
+				autoConnect: false
+			});
+
+			changeEvents.emit = sinon.spy();
+		});
+
+		it('sets new status, if status is different', () => {
+			changeEvents.couchdbStatus = 'disconnected';
+
+			changeEvents.setCouchdbStatus('connected');
+
+			should.equal(changeEvents.couchdbStatus, 'connected');
+		});
+
+		it('emits couchdb status, if status is different', () => {
+			changeEvents.couchdbStatus = 'disconnected';
+
+			changeEvents.setCouchdbStatus('connected');
+
+			should.deepEqual(changeEvents.emit.firstCall.args, [
+				'couchdb_status', 'connected'
+			]);
+		});
+
+		it('does not emit couchdb status, if status is the same', () => {
+			changeEvents.couchdbStatus = 'connected';
+
+			changeEvents.setCouchdbStatus('connected');
+
+			should.equal(changeEvents.emit.callCount, 0);
+		});
+	});
+
+	describe('.getRequestOptions()', () => {
+		it('returns a host in options', () => {
+			const changeEvents = new CouchdbChangeEvents({
+				db: 'my_database',
+				autoConnect: false,
+				host: '127.0.0.1'
+			});
+
+			should.equal(
+				changeEvents.getRequestOptions().host,
+				'127.0.0.1'
+			);
+		});
+
+		it('returns a port in options', () => {
+			const changeEvents = new CouchdbChangeEvents({
+				db: 'my_database',
+				autoConnect: false,
+				port: 1234
+			});
+
+			should.equal(
+				changeEvents.getRequestOptions().port,
+				1234
+			);
+		});
+
+		it('returns get method in options', () => {
+			const changeEvents = new CouchdbChangeEvents({
+				db: 'my_database',
+				autoConnect: false
+			});
+
+			should.equal(
+				changeEvents.getRequestOptions().method,
+				'get'
+			);
+		});
+
+		it('returns correct path in options without extra parameters', () => {
+			const changeEvents = new CouchdbChangeEvents({
+				db: 'my_database',
+				autoConnect: false
+			});
+
+			should.equal(
+				changeEvents.getRequestOptions().path,
+				`/my_database/_changes?feed=continuous&heartbeat=2000` +
+				`&include_docs=true`
+			);
+		});
+
+		it('returns correct path in options with lastEventId', () => {
+			const changeEvents = new CouchdbChangeEvents({
+				db: 'my_database',
+				autoConnect: false,
+				lastEventId: '32-dsjfa'
+			});
+
+			should.equal(
+				changeEvents.getRequestOptions().path,
+				`/my_database/_changes?feed=continuous&heartbeat=2000` +
+				`&include_docs=true&last-event-id=32-dsjfa`
+			);
+		});
+
+		it('returns correct path in options, includeDocs is false', () => {
+			const changeEvents = new CouchdbChangeEvents({
+				db: 'my_database',
+				autoConnect: false,
+				includeDocs: false
+			});
+
+			should.equal(
+				changeEvents.getRequestOptions().path,
+				`/my_database/_changes?feed=continuous&heartbeat=2000`
+			);
+		});
+
+		it('encodes uri components', () => {
+			const changeEvents = new CouchdbChangeEvents({
+				db: 'my_database/',
+				autoConnect: false,
+				lastEventId: '82-/'
+			});
+
+			should.equal(
+				changeEvents.getRequestOptions().path,
+				`/my_database%2F/_changes?feed=continuous&heartbeat=2000` +
+				`&include_docs=true&last-event-id=82-%2F`
+			);
 		});
 	});
 });
