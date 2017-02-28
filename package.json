@@ -15,6 +15,7 @@
   },
   "author": "Toomas Sõukand",
   "license": "ISC",
+  "keywords": ["couchdb", "changes", "events", "stream", "change", "event", "couch", "eventemitter", "emitter"],
   "homepage": "https://git@github.com/soukand/couchdb-change-events#readme",
   "dependencies": {},
   "devDependencies": {
