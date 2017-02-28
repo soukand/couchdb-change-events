@@ -73,8 +73,8 @@ class CouchdbChangeEvents extends EventEmitter {
 		client.request(requestOptions, (response) => {
 			this.couchDbConnection = response;
 
-			this.couchDbConnection.on('data', this.onCouchdbChange);
-			this.couchDbConnection.on('end', this.reconnect);
+			this.couchDbConnection.on('data', this.onCouchdbChange.bind(this));
+			this.couchDbConnection.on('end', this.reconnect.bind(this));
 		}).on('error', (error) => {
 			this.emitError(error);
 			this.reconnect();
