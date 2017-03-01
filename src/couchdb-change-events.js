@@ -11,17 +11,19 @@ class CouchdbChangeEvents extends EventEmitter {
 		includeDocs = true,
 		autoConnect = true,
 		lastEventId,
-		db
+		user,
+		password,
+		database
 	}) {
 		super();
 
 		this.COUCHDB_STATUS_CONNECTED = 'connected';
 		this.COUCHDB_STATUS_DISCONNECTED = 'disconnected';
 
-		if (!db) {
-			let noDbError = new Error('db parameter missing from config');
+		if (!database) {
+			let noDbError = new Error('database parameter missing from config');
 
-			noDbError.error_type = 'EMPTY_DB_PARAMETER';
+			noDbError.error_type = 'EMPTY_DATABASE_PARAMETER';
 
 			throw noDbError;
 		}
@@ -29,7 +31,10 @@ class CouchdbChangeEvents extends EventEmitter {
 		this.host = host;
 		this.port = port;
 		this.protocol = protocol;
-		this.db = db;
+		this.database = database;
+
+		this.user = user;
+		this.password = password;
 
 		this.includeDocs = includeDocs;
 		this.lastEventId = lastEventId;
@@ -120,7 +125,7 @@ class CouchdbChangeEvents extends EventEmitter {
 	}
 
 	getRequestOptions() {
-		let couchDbPath = `/${encodeURIComponent(this.db)}`;
+		let couchDbPath = `/${encodeURIComponent(this.database)}`;
 
 		couchDbPath += `/_changes`;
 		couchDbPath += `?feed=continuous`;

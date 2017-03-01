@@ -1,16 +1,34 @@
 [![Build Status](https://travis-ci.org/soukand/couchdb-change-events.svg?branch=master)](https://travis-ci.org/soukand/couchdb-change-events) [![Code Climate](https://codeclimate.com/github/soukand/couchdb-change-events/badges/gpa.svg)](https://codeclimate.com/github/soukand/couchdb-change-events) [![Issue Count](https://codeclimate.com/github/soukand/couchdb-change-events/badges/issue_count.svg)](https://codeclimate.com/github/soukand/couchdb-change-events) [![Test Coverage](https://codeclimate.com/github/soukand/couchdb-change-events/badges/coverage.svg)](https://codeclimate.com/github/soukand/couchdb-change-events/coverage)
 
-The library is still in progress. It works, but it is missing some features.
+Easy interface to get object changes from CouchDb. This library is basically event emitter that emits changed objects, connection status and errors. If something happens with connection, it will be established again. Library checks also heartbeat and if new heartbeat is not received, connection will be reconnected. So **Sit back and Relax**, everything is taken care for you.
 
-I will provide simple example how to use it. Full documentation will come soon.
+Key reasons why to choose this package are:
+* Follows CouchDb philosophy - Easy to use, bulletproof and you can sit back and relax.
+* When CouchDb is unreachable and comes back online, changes will be emitted again.
+* Reports connection status.
+* Reconnects on connection fail or heartbeats are not received anymore.
+* Always will be 100% test code coverage.
 
-### Usage
+## CouchdbChangeEvents(options)
+Options for initializing library.
+
+* `database`: Name of the database to use for this connection. (Mandatory)
+* `host`: The hostname of the database you are connecting to. (Default:
+  `localhost`)
+* `port`: The port number to connect to. (Default: `5984`)
+* `protocol`: Protocol used to connect to CouchDb. `http/https` (Default: `http`)
+* `includeDocs`: Include the associated document with each result. (Default: `true`)
+* `heartbeat`: Period in milliseconds after which an empty line is sent in the results. (Default: `2000`)
+* `lastEventId`: ID of the last events received by the server on a previous connection
+* `autoConnect`: If it's true then connection is started on initializing, otherwise connect function has to be called. (Default: `true`)
+
+
+## Usage
 ```javascript
 const CouchdbChangeEvents = require('couchdb-change-events');
 
 const couchdbEvents = new CouchdbChangeEvents({
-  host: 'localhost',
-  db: 'my_database'
+  database: 'my_database'
 });
 
 couchdbEvents.on('data', (data) => {

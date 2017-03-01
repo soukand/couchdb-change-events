@@ -42,7 +42,7 @@ describe('CouchdbChangeEvents', () => {
 			CouchdbChangeEvents.prototype.setCouchdbStatus = sinon.spy();
 
 			changeEvents = new CouchdbChangeEvents({
-				db: 'my_database'
+				database: 'my_database'
 			});
 		});
 
@@ -72,13 +72,13 @@ describe('CouchdbChangeEvents', () => {
 			should.equal(changeEvents.heartbeat, 2000);
 		});
 
-		it('uses parameter "db" from provided config', () => {
-			should.equal(changeEvents.db, 'my_database');
+		it('uses parameter "database" from provided config', () => {
+			should.equal(changeEvents.database, 'my_database');
 		});
 
 		it('uses default heartbeat, if empty heartbeat is provided', () => {
 			changeEvents = new CouchdbChangeEvents({
-				db: 'my_database',
+				database: 'my_database',
 				autoConnect: false,
 				heartbeat: null
 			});
@@ -88,7 +88,7 @@ describe('CouchdbChangeEvents', () => {
 
 		it('uses parameter "lastEventId" from provided config', () => {
 			changeEvents = new CouchdbChangeEvents({
-				db: 'my_database',
+				database: 'my_database',
 				lastEventId: '127-eb534549c61b48f28c753ea95c64f02b',
 				autoConnect: false
 			});
@@ -101,7 +101,7 @@ describe('CouchdbChangeEvents', () => {
 
 		it('uses custom config parameter "host" instead of default, if provided', () => {
 			changeEvents = new CouchdbChangeEvents({
-				db: 'my_database',
+				database: 'my_database',
 				host: '127.0.0.1'
 			});
 
@@ -110,7 +110,7 @@ describe('CouchdbChangeEvents', () => {
 
 		it('uses custom config parameter "port" instead of default, if provided', () => {
 			changeEvents = new CouchdbChangeEvents({
-				db: 'my_database',
+				database: 'my_database',
 				port: 3000
 			});
 
@@ -119,7 +119,7 @@ describe('CouchdbChangeEvents', () => {
 
 		it('uses custom config parameter "protocol" instead of default, if provided', () => {
 			changeEvents = new CouchdbChangeEvents({
-				db: 'my_database',
+				database: 'my_database',
 				protocol: 'https'
 			});
 
@@ -128,7 +128,7 @@ describe('CouchdbChangeEvents', () => {
 
 		it('uses custom config parameter "heartbeat" instead of default, if provided', () => {
 			changeEvents = new CouchdbChangeEvents({
-				db: 'my_database',
+				database: 'my_database',
 				heartbeat: 4000
 			});
 
@@ -137,19 +137,19 @@ describe('CouchdbChangeEvents', () => {
 
 		it('uses custom config parameter "includeDocs" instead of default, if provided', () => {
 			changeEvents = new CouchdbChangeEvents({
-				db: 'my_database',
+				database: 'my_database',
 				includeDocs: false
 			});
 
 			should.equal(changeEvents.includeDocs, false);
 		});
 
-		it('throws an error, if db is not provided ', () => {
+		it('throws an error, if database is not provided ', () => {
 			try {
 				new CouchdbChangeEvents({});
 			} catch (error) {
-				should.equal(error.message, 'db parameter missing from config');
-				should.equal(error.error_type, 'EMPTY_DB_PARAMETER');
+				should.equal(error.message, 'database parameter missing from config');
+				should.equal(error.error_type, 'EMPTY_DATABASE_PARAMETER');
 			}
 		});
 
@@ -179,7 +179,7 @@ describe('CouchdbChangeEvents', () => {
 			changeEvents.connect.reset();
 
 			changeEvents = new CouchdbChangeEvents({
-				db: 'my_database',
+				database: 'my_database',
 				autoConnect: false
 			});
 
@@ -194,7 +194,7 @@ describe('CouchdbChangeEvents', () => {
 			CouchdbChangeEvents.prototype.connect = sinon.spy();
 
 			changeEvents = new CouchdbChangeEvents({
-				db: 'my_database',
+				database: 'my_database',
 				autoConnect: false
 			});
 
@@ -238,7 +238,7 @@ describe('CouchdbChangeEvents', () => {
 
 		beforeEach(() => {
 			changeEvents = new CouchdbChangeEvents({
-				db: 'my_database',
+				database: 'my_database',
 				autoConnect: false
 			});
 
@@ -322,7 +322,7 @@ describe('CouchdbChangeEvents', () => {
 
 		beforeEach(() => {
 			changeEvents = new CouchdbChangeEvents({
-				db: 'my_database',
+				database: 'my_database',
 				autoConnect: false
 			});
 
@@ -376,7 +376,7 @@ describe('CouchdbChangeEvents', () => {
 
 		beforeEach(() => {
 			changeEvents = new CouchdbChangeEvents({
-				db: 'my_database',
+				database: 'my_database',
 				autoConnect: false
 			});
 
@@ -397,7 +397,7 @@ describe('CouchdbChangeEvents', () => {
 
 		beforeEach(() => {
 			changeEvents = new CouchdbChangeEvents({
-				db: 'my_database',
+				database: 'my_database',
 				autoConnect: false
 			});
 
@@ -430,7 +430,7 @@ describe('CouchdbChangeEvents', () => {
 
 		beforeEach(() => {
 			changeEvents = new CouchdbChangeEvents({
-				db: 'my_database',
+				database: 'my_database',
 				autoConnect: false
 			});
 
@@ -467,7 +467,7 @@ describe('CouchdbChangeEvents', () => {
 	describe('.getRequestOptions()', () => {
 		it('returns a host in options', () => {
 			const changeEvents = new CouchdbChangeEvents({
-				db: 'my_database',
+				database: 'my_database',
 				autoConnect: false,
 				host: '127.0.0.1'
 			});
@@ -480,7 +480,7 @@ describe('CouchdbChangeEvents', () => {
 
 		it('returns a port in options', () => {
 			const changeEvents = new CouchdbChangeEvents({
-				db: 'my_database',
+				database: 'my_database',
 				autoConnect: false,
 				port: 1234
 			});
@@ -493,7 +493,7 @@ describe('CouchdbChangeEvents', () => {
 
 		it('returns get method in options', () => {
 			const changeEvents = new CouchdbChangeEvents({
-				db: 'my_database',
+				database: 'my_database',
 				autoConnect: false
 			});
 
@@ -505,7 +505,7 @@ describe('CouchdbChangeEvents', () => {
 
 		it('returns correct path in options without extra parameters', () => {
 			const changeEvents = new CouchdbChangeEvents({
-				db: 'my_database',
+				database: 'my_database',
 				autoConnect: false
 			});
 
@@ -518,7 +518,7 @@ describe('CouchdbChangeEvents', () => {
 
 		it('returns correct path in options with lastEventId', () => {
 			const changeEvents = new CouchdbChangeEvents({
-				db: 'my_database',
+				database: 'my_database',
 				autoConnect: false,
 				lastEventId: '32-dsjfa'
 			});
@@ -532,7 +532,7 @@ describe('CouchdbChangeEvents', () => {
 
 		it('returns correct path in options, includeDocs is false', () => {
 			const changeEvents = new CouchdbChangeEvents({
-				db: 'my_database',
+				database: 'my_database',
 				autoConnect: false,
 				includeDocs: false
 			});
@@ -545,7 +545,7 @@ describe('CouchdbChangeEvents', () => {
 
 		it('encodes uri components', () => {
 			const changeEvents = new CouchdbChangeEvents({
-				db: 'my_database/',
+				database: 'my_database/',
 				autoConnect: false,
 				lastEventId: '82-/'
 			});
