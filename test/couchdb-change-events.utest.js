@@ -556,5 +556,19 @@ describe('CouchdbChangeEvents', () => {
 				`&include_docs=true&last-event-id=82-%2F`
 			);
 		});
+
+		it('uses auth when user is specified', () => {
+			const changeEvents = new CouchdbChangeEvents({
+				database: 'my_database/',
+				autoConnect: false,
+				user: 'username',
+				password: 'password'
+			});
+
+			should.equal(
+				changeEvents.getRequestOptions().auth,
+				'username:password'
+			);
+		});
 	});
 });
