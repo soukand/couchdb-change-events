@@ -125,7 +125,8 @@ class CouchdbChangeEvents extends EventEmitter {
 	}
 
 	getRequestOptions() {
-		let couchDbPath = `/${encodeURIComponent(this.database)}`;
+		let couchDbPath = `/${encodeURIComponent(this.database)}`,
+			auth;
 
 		couchDbPath += `/_changes`;
 		couchDbPath += `?feed=continuous`;
@@ -141,11 +142,16 @@ class CouchdbChangeEvents extends EventEmitter {
 			couchDbPath += `&last-event-id=${lastEventId}`;
 		}
 
+		if (this.user) {
+			auth = `${this.user}:${this.password}`;
+		}
+
 		return {
 			host: this.host,
 			port: this.port,
 			path: couchDbPath,
-			method: 'get'
+			method: 'get',
+			auth: auth
 		};
 	}
 }

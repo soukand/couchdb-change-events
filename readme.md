@@ -5,6 +5,7 @@ Easy interface to get object changes from CouchDb. This library is basically eve
 Key reasons why to choose this package are:
 * Follows CouchDb philosophy - Easy to use, bulletproof and you can sit back and relax.
 * When CouchDb is unreachable and comes back online, changes will be emitted again.
+* **No dependencies**.
 * Reports connection status.
 * Reconnects on connection fail or heartbeats are not received anymore.
 * Always will be 100% test code coverage.
@@ -19,11 +20,14 @@ Options for initializing library.
 * `protocol`: Protocol used to connect to CouchDb. `http/https` (Default: `http`)
 * `includeDocs`: Include the associated document with each result. (Default: `true`)
 * `heartbeat`: Period in milliseconds after which an empty line is sent in the results. (Default: `2000`)
-* `lastEventId`: ID of the last events received by the server on a previous connection
+* `lastEventId`: ID of the last events received by the server on a previous connection.
 * `autoConnect`: If it's true then connection is started on initializing, otherwise connect function has to be called. (Default: `true`)
+* `user`: The CouchDb user to authenticate as.
+* `password`: The password of that CouchDb user.
 
 
 ## Usage
+#### Quick start
 ```javascript
 const CouchdbChangeEvents = require('couchdb-change-events');
 
@@ -41,6 +45,22 @@ couchdbEvents.on('couchdb_status', (status) => {
 
 couchdbEvents.on('couchdb_error', (error) => {
   console.log('error', error);
+});
+```
+
+#### Authentication
+```javascript
+const CouchdbChangeEvents = require('couchdb-change-events');
+
+const couchdbEvents = new CouchdbChangeEvents({
+  database: 'my_database'
+  host: '127.0.0.1',
+  user: 'username',
+  password: 'secret'
+});
+
+couchdbEvents.on('data', (data) => {
+  console.log(data);
 });
 
 ```
