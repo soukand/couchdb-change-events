@@ -53,7 +53,7 @@ couchdbEvents.on('couchdb_error', (error) => {
 const CouchdbChangeEvents = require('couchdb-change-events');
 
 const couchdbEvents = new CouchdbChangeEvents({
-  database: 'my_database'
+  database: 'my_database',
   host: '127.0.0.1',
   user: 'username',
   password: 'secret'
