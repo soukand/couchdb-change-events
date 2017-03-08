@@ -139,7 +139,7 @@ class CouchdbChangeEvents extends EventEmitter {
 		if (this.lastEventId) {
 			let lastEventId = encodeURIComponent(this.lastEventId);
 
-			couchDbPath += `&last-event-id=${lastEventId}`;
+			couchDbPath += `&since=${lastEventId}`;
 		}
 
 		if (this.user) {
