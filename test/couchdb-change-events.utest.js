@@ -526,7 +526,7 @@ describe('CouchdbChangeEvents', () => {
 			should.equal(
 				changeEvents.getRequestOptions().path,
 				`/my_database/_changes?feed=continuous&heartbeat=2000` +
-				`&include_docs=true&last-event-id=32-dsjfa`
+				`&include_docs=true&since=32-dsjfa`
 			);
 		});
 
@@ -553,7 +553,7 @@ describe('CouchdbChangeEvents', () => {
 			should.equal(
 				changeEvents.getRequestOptions().path,
 				`/my_database%2F/_changes?feed=continuous&heartbeat=2000` +
-				`&include_docs=true&last-event-id=82-%2F`
+				`&include_docs=true&since=82-%2F`
 			);
 		});
 
