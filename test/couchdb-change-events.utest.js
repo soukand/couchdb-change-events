@@ -12,7 +12,11 @@ describe('CouchdbChangeEvents', () => {
 		proxy = {};
 
 		httpResponse = {
-			on: sinon.stub().callsArg(1)
+			on: sinon.stub().callsArg(1),
+			headers: {
+				server: 'CouchDB (Erlang/OTP)'
+			},
+			destroy: sinon.spy()
 		};
 
 		http = {
@@ -315,6 +319,25 @@ describe('CouchdbChangeEvents', () => {
 			should.equal(httpResponse.on.secondCall.args[0], 'end');
 			should.equal(changeEvents.reconnect.callCount, 2);
 		});
+
+		it('emits not_couchdb error, if response is not from couchdb', () => {
+			httpResponse.headers.server = 'random server';
+
+			changeEvents.connect();
+
+			should.equal(
+				changeEvents.emitError.firstCall.args[0].message,
+				'not_couchdb'
+			);
+		});
+
+		it('reconnects, if response is not from couchdb', () => {
+			httpResponse.headers.server = null;
+
+			changeEvents.connect();
+
+			should.equal(changeEvents.reconnect.callCount, 2);
+		});
 	});
 
 	describe('.onCouchdbChange()', () => {
@@ -330,6 +353,7 @@ describe('CouchdbChangeEvents', () => {
 
 			changeEvents.setCouchdbStatus = sinon.spy();
 			changeEvents.emit = sinon.spy();
+			changeEvents.emitError = sinon.spy();
 		});
 
 		it('sets couchdb status to connected, if its not already', () => {
@@ -368,6 +392,24 @@ describe('CouchdbChangeEvents', () => {
 			should.deepEqual(changeEvents.emit.secondCall.args, [
 				'data', { seq: 33 }
 			]);
+		});
+
+		it('emits error, if error data is received', () => {
+			changeEvents.onCouchdbChange(
+				'{"error": "unauthorized", "reason": "wrong password"}'
+			);
+
+			should.equal(changeEvents.emit.callCount, 0);
+
+			should.equal(
+				changeEvents.emitError.firstCall.args[0].message,
+				'unauthorized'
+			);
+
+			should.equal(
+				changeEvents.emitError.firstCall.args[0].reason,
+				'wrong password'
+			);
 		});
 	});
 

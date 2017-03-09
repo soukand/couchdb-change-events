@@ -78,8 +78,14 @@ class CouchdbChangeEvents extends EventEmitter {
 		client.request(requestOptions, (response) => {
 			this.couchDbConnection = response;
 
-			this.couchDbConnection.on('data', this.onCouchdbChange.bind(this));
-			this.couchDbConnection.on('end', this.reconnect.bind(this));
+			if ((response.headers.server || '').match(/^couchdb/i)) {
+				this.couchDbConnection.on('data', this.onCouchdbChange.bind(this));
+				this.couchDbConnection.on('end', this.reconnect.bind(this));
+			} else {
+				response.destroy();
+				this.emitError(new Error('not_couchdb'));
+				this.reconnect();
+			}
 		}).on('error', (error) => {
 			this.emitError(error);
 			this.reconnect();
@@ -99,9 +105,16 @@ class CouchdbChangeEvents extends EventEmitter {
 			for (let change of messages) {
 				let couchdbChange = JSON.parse(change);
 
-				this.lastEventId = couchdbChange.seq;
+				if (couchdbChange.error) {
+					const error = new Error(couchdbChange.error);
 
-				this.emit('data', couchdbChange);
+					error.reason = couchdbChange.reason;
+
+					this.emitError(error);
+				} else {
+					this.lastEventId = couchdbChange.seq;
+					this.emit('data', couchdbChange);
+				}
 			}
 		}
 	}
