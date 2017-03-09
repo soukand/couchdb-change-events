@@ -1,6 +1,6 @@
 {
   "name": "couchdb-change-events",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "description": "This library will emit changes done in couchdb.",
   "main": "index.js",
   "scripts": {
