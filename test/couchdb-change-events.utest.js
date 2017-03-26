@@ -608,7 +608,7 @@ describe('CouchdbChangeEvents', () => {
 			should.equal(
 				changeEvents.getRequestOptions().path,
 				`/my_database/_changes?feed=continuous&heartbeat=2000` +
-				`&include_docs=true&view=my-view`
+				`&include_docs=true&filter=_view&view=my-view`
 			);
 		});
 
@@ -651,7 +651,7 @@ describe('CouchdbChangeEvents', () => {
 			should.equal(
 				changeEvents.getRequestOptions().path,
 				`/my_database%2F/_changes?feed=continuous&heartbeat=2000` +
-				`&include_docs=true&since=82-%2F&view=my-view%2F&style=main_only%2F`
+				`&include_docs=true&since=82-%2F&filter=_view&view=my-view%2F&style=main_only%2F`
 			);
 		});
 

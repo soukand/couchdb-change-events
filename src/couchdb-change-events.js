@@ -163,7 +163,7 @@ class CouchdbChangeEvents extends EventEmitter {
 		if (this.view) {
 			let view = encodeURIComponent(this.view);
 
-			couchDbPath += `&view=${view}`;
+			couchDbPath += `&filter=_view&view=${view}`;
 		}
 
 		if (this.style) {
