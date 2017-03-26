@@ -103,6 +103,32 @@ describe('CouchdbChangeEvents', () => {
 			);
 		});
 
+		it('uses parameter "view" from provided config', () => {
+			changeEvents = new CouchdbChangeEvents({
+				database: 'my_database',
+				view: 'my-view',
+				autoConnect: false
+			});
+
+			should.equal(
+				changeEvents.view,
+				'my-view'
+			);
+		});
+
+		it('uses parameter "style" from provided config', () => {
+			changeEvents = new CouchdbChangeEvents({
+				database: 'my_database',
+				style: 'main_doc',
+				autoConnect: false
+			});
+
+			should.equal(
+				changeEvents.style,
+				'main_doc'
+			);
+		});
+
 		it('uses custom config parameter "host" instead of default, if provided', () => {
 			changeEvents = new CouchdbChangeEvents({
 				database: 'my_database',
@@ -572,6 +598,34 @@ describe('CouchdbChangeEvents', () => {
 			);
 		});
 
+		it('returns correct path in options with view', () => {
+			const changeEvents = new CouchdbChangeEvents({
+				database: 'my_database',
+				autoConnect: false,
+				view: 'my-view'
+			});
+
+			should.equal(
+				changeEvents.getRequestOptions().path,
+				`/my_database/_changes?feed=continuous&heartbeat=2000` +
+				`&include_docs=true&view=my-view`
+			);
+		});
+
+		it('returns correct path in options with style', () => {
+			const changeEvents = new CouchdbChangeEvents({
+				database: 'my_database',
+				autoConnect: false,
+				style: 'main_only'
+			});
+
+			should.equal(
+				changeEvents.getRequestOptions().path,
+				`/my_database/_changes?feed=continuous&heartbeat=2000` +
+				`&include_docs=true&style=main_only`
+			);
+		});
+
 		it('returns correct path in options, includeDocs is false', () => {
 			const changeEvents = new CouchdbChangeEvents({
 				database: 'my_database',
@@ -589,13 +643,15 @@ describe('CouchdbChangeEvents', () => {
 			const changeEvents = new CouchdbChangeEvents({
 				database: 'my_database/',
 				autoConnect: false,
-				lastEventId: '82-/'
+				lastEventId: '82-/',
+				view: 'my-view/',
+				style: 'main_only/'
 			});
 
 			should.equal(
 				changeEvents.getRequestOptions().path,
 				`/my_database%2F/_changes?feed=continuous&heartbeat=2000` +
-				`&include_docs=true&since=82-%2F`
+				`&include_docs=true&since=82-%2F&view=my-view%2F&style=main_only%2F`
 			);
 		});
 

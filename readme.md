@@ -24,6 +24,9 @@ Options for initializing library.
 * `autoConnect`: If it's true then connection is started on initializing, otherwise connect function has to be called. (Default: `true`)
 * `user`: The CouchDb user to authenticate as.
 * `password`: The password of that CouchDb user.
+* `view`: Allows to use view functions as filters. Documents counted as “passed” for view filter in case if map function emits at least one record for them
+* `style`: Specifies how many revisions are returned in the changes array. The default, `main_only`, will only return the current “winning” revision; `all_docs` will return all leaf revisions (including conflicts and deleted former conflicts).
+
 
 
 ## Usage

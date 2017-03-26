@@ -13,7 +13,9 @@ class CouchdbChangeEvents extends EventEmitter {
 		lastEventId,
 		user,
 		password,
-		database
+		database,
+		view,
+		style
 	}) {
 		super();
 
@@ -38,6 +40,9 @@ class CouchdbChangeEvents extends EventEmitter {
 
 		this.includeDocs = includeDocs;
 		this.lastEventId = lastEventId;
+
+		this.style = style;
+		this.view = view;
 
 		this.heartbeat = parseInt(heartbeat, 10) || 2000;
 
@@ -153,6 +158,18 @@ class CouchdbChangeEvents extends EventEmitter {
 			let lastEventId = encodeURIComponent(this.lastEventId);
 
 			couchDbPath += `&since=${lastEventId}`;
+		}
+
+		if (this.view) {
+			let view = encodeURIComponent(this.view);
+
+			couchDbPath += `&view=${view}`;
+		}
+
+		if (this.style) {
+			let style = encodeURIComponent(this.style);
+
+			couchDbPath += `&style=${style}`;
 		}
 
 		if (this.user) {
