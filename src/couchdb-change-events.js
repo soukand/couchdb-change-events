@@ -84,6 +84,7 @@ class CouchdbChangeEvents extends EventEmitter {
 			this.couchDbConnection = response;
 
 			if ((response.headers.server || '').match(/^couchdb/i)) {
+				this.rawData = '';
 				this.couchDbConnection.on('data', this.onCouchdbChange.bind(this));
 				this.couchDbConnection.on('end', this.reconnect.bind(this));
 			} else {
@@ -102,12 +103,15 @@ class CouchdbChangeEvents extends EventEmitter {
 
 		this.lastHeartBeat = new Date().getTime();
 
-		const messages = data.toString().split('\n').filter((value) => {
-			return value !== '';
-		});
+		this.rawData += data.toString();
+
+		const messages = this.rawData.split('\n');
+
+		this.rawData = messages.pop();
 
 		if (messages.length > 0) {
 			for (let change of messages) {
+				if(change == '') continue;
 				let couchdbChange = JSON.parse(change, (key, value) =>
 					typeof value === 'string'
 					? value.replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0')
