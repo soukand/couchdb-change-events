@@ -15,7 +15,8 @@ class CouchdbChangeEvents extends EventEmitter {
 		password,
 		database,
 		view,
-		style
+		style,
+        conflicts = false
 	}) {
 		super();
 
@@ -43,6 +44,7 @@ class CouchdbChangeEvents extends EventEmitter {
 
 		this.style = style;
 		this.view = view;
+        this.conflicts = conflicts
 
 		this.heartbeat = parseInt(heartbeat, 10) || 2000;
 
@@ -84,6 +86,7 @@ class CouchdbChangeEvents extends EventEmitter {
 			this.couchDbConnection = response;
 
 			if ((response.headers.server || '').match(/^couchdb/i)) {
+				this.rawData = '';
 				this.couchDbConnection.on('data', this.onCouchdbChange.bind(this));
 				this.couchDbConnection.on('end', this.reconnect.bind(this));
 			} else {
@@ -102,12 +105,15 @@ class CouchdbChangeEvents extends EventEmitter {
 
 		this.lastHeartBeat = new Date().getTime();
 
-		const messages = data.toString().split('\n').filter((value) => {
-			return value !== '';
-		});
+		this.rawData += data.toString();
+
+		const messages = this.rawData.split('\n');
+
+		this.rawData = messages.pop();
 
 		if (messages.length > 0) {
 			for (let change of messages) {
+				if(change == '') continue;
 				let couchdbChange = JSON.parse(change, (key, value) =>
 					typeof value === 'string'
 					? value.replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0')
@@ -157,6 +163,10 @@ class CouchdbChangeEvents extends EventEmitter {
 		if (this.includeDocs) {
 			couchDbPath += '&include_docs=true';
 		}
+                                      
+        if (this.conflicts) {
+            couchDbPath += '&conflicts=true';
+        }
 
 		if (this.lastEventId) {
 			let lastEventId = encodeURIComponent(this.lastEventId);

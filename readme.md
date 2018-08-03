@@ -26,6 +26,8 @@ Options for initializing library.
 * `password`: The password of that CouchDb user.
 * `view`: Allows to use view functions as filters. Documents counted as “passed” for view filter in case if map function emits at least one record for them
 * `style`: Specifies how many revisions are returned in the changes array. The default, `main_only`, will only return the current “winning” revision; `all_docs` will return all leaf revisions (including conflicts and deleted former conflicts).
+* `conflicts`: Includes conflicts information in response. Ignored if `include_docs` isn’t true. Default is `false`.
+
 
 
 
