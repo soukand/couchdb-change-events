@@ -15,7 +15,8 @@ class CouchdbChangeEvents extends EventEmitter {
 		password,
 		database,
 		view,
-		style
+		style,
+        conflicts = false
 	}) {
 		super();
 
@@ -43,6 +44,7 @@ class CouchdbChangeEvents extends EventEmitter {
 
 		this.style = style;
 		this.view = view;
+        this.conflicts = conflicts
 
 		this.heartbeat = parseInt(heartbeat, 10) || 2000;
 
@@ -161,6 +163,10 @@ class CouchdbChangeEvents extends EventEmitter {
 		if (this.includeDocs) {
 			couchDbPath += '&include_docs=true';
 		}
+                                      
+        if (this.conflicts) {
+            couchDbPath += '&conflicts=true';
+        }
 
 		if (this.lastEventId) {
 			let lastEventId = encodeURIComponent(this.lastEventId);
